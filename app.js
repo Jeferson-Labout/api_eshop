@@ -1,22 +1,27 @@
-const express = require('express')
-const app = express()
-const bodyParser = require('body-parser')
-const morgan = require('morgan')
-const mongoose = require('mongoose')
+const express = require('express');
+const app = express();
+const bodyParser = require('body-parser');
+const morgan = require('morgan');
+const mongoose = require('mongoose');
+const cors = require('cors');
+require('dotenv/config');
 
-require('dotenv/config')
-const api = process.env.API_URL
-
-const categoriesRoutes = require('./routers/categories');
-const productsRoutes = require('./routers/products');
-const usersRoutes = require('./routers/users');
-const ordersRoutes = require('./routers/orders');
+app.use(cors());
+app.options('*', cors());
 
 //Middleware
 app.use(bodyParser.json())
 app.use(morgan('tiny'))
 
+const api = process.env.API_URL
+
 //Routes
+const categoriesRoutes = require('./routers/categories');
+const productsRoutes = require('./routers/products');
+const usersRoutes = require('./routers/users');
+const ordersRoutes = require('./routers/orders');
+
+
 
 app.use(`${api}/categories`, categoriesRoutes)
 app.use(`${api}/products`, productsRoutes)
