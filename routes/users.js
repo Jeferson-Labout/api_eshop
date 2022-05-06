@@ -23,32 +23,23 @@ router.get('/:id', async(req,res)=>{
 })
 
 router.post('/', async (req,res)=>{
-    let user = new User({
-        name: req.body.name,
-        email: req.body.email,
-        passwordHash: bcrypt.hashSync(req.body.password, 10),
-        phone: req.body.phone,
-        isAdmin: req.body.isAdmin,
-        street: req.body.street,
-        apartment: req.body.apartment,
-        zip: req.body.zip,
-        city: req.body.city,
-        country: req.body.country,
-    })
-    user = await user.save();
-
-    if(!user)
-    return res.status(400).send('O usuário não pode ser criado!')
-
-    res.send(user);
+   
+    try {
+        const user = await User.create(req.body);
+        return res.send({user});
+    } catch (err) {
+        return res.status(400).send({error:'O usuário não pode ser criado!'})
+        
+    }
+   
 })
 
 router.put('/:id',async (req, res)=> {
 
     const userExist = await User.findById(req.params.id);
     let newPassword
-    if(req.body.password) {
-        newPassword = bcrypt.hashSync(req.body.password, 10)
+    if(req.body.passwordHash) {
+        newPassword = await bcrypt.hash(req.body.passwordHash, 10);
     } else {
         newPassword = userExist.passwordHash;
     }
@@ -106,7 +97,7 @@ router.post('/register', async (req,res)=>{
     let user = new User({
         name: req.body.name,
         email: req.body.email,
-        passwordHash: bcrypt.hashSync(req.body.password, 10),
+        passwordHash: req.body.passwordHash,
         phone: req.body.phone,
         isAdmin: req.body.isAdmin,
         street: req.body.street,
